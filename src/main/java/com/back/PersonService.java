@@ -1,10 +1,14 @@
 package com.back;
-import org.springframework.stereotype.Component;
 
-@Component
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
 public class PersonService {
 
     private int version = 1;
+//    private ArrayList<Integer> nums;
 
     public PersonService(int version) {
         this.version = version;
