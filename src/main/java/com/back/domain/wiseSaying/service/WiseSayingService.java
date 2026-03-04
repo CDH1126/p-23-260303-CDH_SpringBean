@@ -14,11 +14,9 @@ public class WiseSayingService {
 
     private final WiseSayingRepository wiseSayingRepository;
 
-    private int lastId = 5;
-
     public WiseSaying write(String content, String author) {
 
-        WiseSaying wiseSaying = new WiseSaying(++lastId, content, author);
+        WiseSaying wiseSaying = new WiseSaying(content, author);
         wiseSayingRepository.save(wiseSaying);
 
         return wiseSaying;
@@ -45,4 +43,9 @@ public class WiseSayingService {
     public void modify(WiseSaying wiseSaying, String content, String author) {
         wiseSayingRepository.save(wiseSaying);
     }
+
+    public long count() {
+        return wiseSayingRepository.count();
+    }
+
 }
