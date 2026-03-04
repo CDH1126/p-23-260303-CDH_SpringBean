@@ -2,10 +2,13 @@ package com.back.domain.wiseSaying;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -23,11 +26,8 @@ public class WiseSayingController {
 
     @GetMapping("/write")
     @ResponseBody
-    public String write(
-            String content,
-            String author
-    ) {
-
+    public String write(@RequestParam String content, @RequestParam String author) {
+            // @RequestParam - 명시적으로 사용
         if(content == null || content.trim().length() == 0) {
             throw new RuntimeException("명언을 입력해주세요.");
         }
@@ -54,7 +54,27 @@ public class WiseSayingController {
                 <ul>
                 %s
                 </ul>
-                """.formatted(wiseSayings);
+                """.formatted(wiseSayingList);
+    }
+
+
+    @GetMapping("/delete/{id}")
+    @ResponseBody
+    public String delete(
+            @PathVariable int id
+    ) {
+
+        Optional<WiseSaying> wiseSaying = wiseSayings.stream()
+                .filter(w -> w.getId() == id)
+                .findFirst();
+
+        if(wiseSaying.isEmpty()) {
+            throw new RuntimeException("%d번 명언은 존재하지 않습니다.".formatted(id));
+        }
+
+        wiseSayings.remove(wiseSaying.get());
+
+        return "%d번 명언이 삭제되었습니다".formatted(id);
     }
 
 }
