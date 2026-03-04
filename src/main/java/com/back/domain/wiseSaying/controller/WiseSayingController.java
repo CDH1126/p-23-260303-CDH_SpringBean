@@ -1,44 +1,25 @@
-package com.back.domain.wiseSaying;
+package com.back.domain.wiseSaying.controller;
 
+import com.back.domain.wiseSaying.entity.WiseSaying;
+import com.back.domain.wiseSaying.service.WiseSayingService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("wiseSayings")
+@RequiredArgsConstructor
 public class WiseSayingController {
 
-    private int lastId = 5;
+    private final WiseSayingService wiseSayingService;
 
-    private final List<WiseSaying> wiseSayings = new ArrayList<>(){{
-        add(new WiseSaying(1, "삶이 있는 한 희망은 있다.", "키케로"));
-        add(new WiseSaying(2, "하루에 3시간을 걸으면 7년 후에 지구를 한 바퀴 돌 수 있다.", "사무엘 존슨"));
-        add(new WiseSaying(3, "언제나 현재에 집중할수 있다면 행복할 것이다.", "파울로 코엘료"));
-        add(new WiseSaying(4, "신은 용기있는 자를 결코 버리지 않는다.", "켈러"));
-        add(new WiseSaying(5, "피할 수 없으면 즐겨라.", "로버트 엘리엇"));
-    }};
-
-
-    private WiseSaying findById(int id) {
-        Optional<WiseSaying> wiseSaying = wiseSayings.stream()
-                .filter(w -> w.getId() == id)
-                .findFirst();
-
-        if(wiseSaying.isEmpty()) {
-            throw new RuntimeException("%d번 명언은 존재하지 않습니다.".formatted(id));
-        }
-
-        return wiseSaying.get();
-    }
 
     @GetMapping("/write")
     @ResponseBody
     public String write(@RequestParam String content, @RequestParam String author) {
-            // @RequestParam - 명시적으로 사용
         if(content == null || content.trim().length() == 0) {
             throw new RuntimeException("명언을 입력해주세요.");
         }
@@ -47,8 +28,7 @@ public class WiseSayingController {
             throw new RuntimeException("작가를 입력해주세요.");
         }
 
-        WiseSaying wiseSaying = new WiseSaying(++lastId, content, author);
-        wiseSayings.add(wiseSaying);
+        WiseSaying wiseSaying = wiseSayingService.write(content, author);
 
         return "%d번 명언이 등록되었습니다.".formatted(wiseSaying.getId());
     }
@@ -57,7 +37,8 @@ public class WiseSayingController {
     @ResponseBody
     public String list() {
 
-        String wiseSayingList = wiseSayings.stream()
+        List<WiseSaying> wiseSayings = wiseSayingService.findAll();
+        String wiseSayingsList = wiseSayings.stream()
                 .map(w -> "<li>%s / %s / %s</li>".formatted(w.getId(), w.getContent(), w.getAuthor()))
                 .collect(Collectors.joining("\n"));
 
@@ -65,7 +46,7 @@ public class WiseSayingController {
                 <ul>
                 %s
                 </ul>
-                """.formatted(wiseSayingList);
+                """.formatted(wiseSayingsList);
     }
 
 
@@ -74,13 +55,11 @@ public class WiseSayingController {
     public String delete(
             @PathVariable int id // 1, 2
     ) {
-        WiseSaying wiseSaying = findById(id);
-        wiseSayings.remove(wiseSaying);
+        WiseSaying wiseSaying = wiseSayingService.findById(id);
+        wiseSayingService.delete(wiseSaying);
 
         return "%d번 명언이 삭제되었습니다".formatted(id);
     }
-
-
 
     @GetMapping("/{id}/modify")
     @ResponseBody
@@ -90,13 +69,11 @@ public class WiseSayingController {
             @RequestParam(defaultValue = "기본값") String author
     ) {
 
-        WiseSaying wiseSaying = findById(id);
-        wiseSaying.setContent(content);
-        wiseSaying.setAuthor(author);
+        WiseSaying wiseSaying = wiseSayingService.findById(id);
+        wiseSayingService.modify(wiseSaying, content, author);
 
         return "%d번 명언이 수정되었습니다.".formatted(wiseSaying.getId());
     }
-
 
     @GetMapping("/{id}")
     @ResponseBody
@@ -104,13 +81,12 @@ public class WiseSayingController {
             @PathVariable int id
     ) {
 
-        WiseSaying wiseSaying = findById(id);
+        WiseSaying wiseSaying = wiseSayingService.findById(id);
         return """
                 <h1>번호 : %s</h1>
                 <div>명언 : %s</div>
                 <div>작가 : %s</div>
                 """.formatted(wiseSaying.getId(), wiseSaying.getContent(), wiseSaying.getAuthor());
     }
-
 
 }
