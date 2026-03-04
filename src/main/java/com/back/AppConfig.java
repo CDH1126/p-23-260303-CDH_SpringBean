@@ -57,7 +57,7 @@ public class AppConfig {
 
     @Autowired
     @Lazy
-    private AppConfig self;
+    private AppConfig self; // AppConfigProxy의 리모콘
 
 
     @Bean
