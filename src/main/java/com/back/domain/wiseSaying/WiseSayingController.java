@@ -58,12 +58,36 @@ public class WiseSayingController {
     }
 
 
-    @GetMapping("/delete/{id}")
+    @GetMapping("/delete/{id}") // delete/1, delete/2
     @ResponseBody
     public String delete(
-            @PathVariable int id
+            @PathVariable int id // 1, 2
+    ) {
+        WiseSaying wiseSaying = findById(id);
+        wiseSayings.remove(wiseSaying);
+
+        return "%d번 명언이 삭제되었습니다".formatted(id);
+    }
+
+
+
+    @GetMapping("/modify/{id}")
+    @ResponseBody
+    public String modify(
+            @PathVariable int id,
+            @RequestParam(defaultValue = "기본값") String content,
+            @RequestParam(defaultValue = "기본값") String author
     ) {
 
+        WiseSaying wiseSaying = findById(id);
+        wiseSaying.setContent(content);
+        wiseSaying.setAuthor(author);
+
+        return "%d번 명언이 수정되었습니다.".formatted(wiseSaying.getId());
+    }
+
+
+    private WiseSaying findById(int id) {
         Optional<WiseSaying> wiseSaying = wiseSayings.stream()
                 .filter(w -> w.getId() == id)
                 .findFirst();
@@ -72,9 +96,7 @@ public class WiseSayingController {
             throw new RuntimeException("%d번 명언은 존재하지 않습니다.".formatted(id));
         }
 
-        wiseSayings.remove(wiseSaying.get());
-
-        return "%d번 명언이 삭제되었습니다".formatted(id);
+        return wiseSaying.get();
     }
 
 }
