@@ -3,6 +3,7 @@ package com.back;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
 import java.util.List;
 
@@ -36,9 +37,18 @@ public class AppConfig {
 //    }
 
     @Bean
-    public ApplicationRunner myApplicationRunner() {
+    @Order(1)
+    public ApplicationRunner myApplicationRunner1() {
         return args -> { // 익명 객체 간소화 버전
-            System.out.println("MyApplicationRunner is running");
+            System.out.println("MyApplicationRunner1 is running");
+        };
+    }
+
+    @Bean
+    @Order(2)
+    public ApplicationRunner myApplicationRunner2() {
+        return args -> { // 익명 객체 간소화 버전
+            System.out.println("MyApplicationRunner2 is running");
         };
     }
 
