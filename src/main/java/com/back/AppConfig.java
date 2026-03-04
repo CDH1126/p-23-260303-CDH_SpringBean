@@ -1,9 +1,12 @@
 package com.back;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.Order;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -50,6 +53,29 @@ public class AppConfig {
         return args -> { // 익명 객체 간소화 버전
             System.out.println("MyApplicationRunner2 is running");
         };
+    }
+
+    @Autowired
+    @Lazy
+    private AppConfig self;
+
+
+    @Bean
+    public ApplicationRunner myApplicationRunner3() {
+        return args -> { // 익명 객체 간소화 버전
+            work1();
+            work2();
+        };
+    }
+
+    @Transactional
+    public void work1() {
+        System.out.println("work1 is running");
+    }
+
+    @Transactional
+    public void work2() {
+        System.out.println("work2 is running");
     }
 
 }
