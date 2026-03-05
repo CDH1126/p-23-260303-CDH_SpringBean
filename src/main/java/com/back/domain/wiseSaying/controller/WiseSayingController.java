@@ -4,6 +4,7 @@ import com.back.domain.wiseSaying.entity.WiseSaying;
 import com.back.domain.wiseSaying.service.WiseSayingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -50,6 +51,7 @@ public class WiseSayingController {
     }
 
 
+    @Transactional
     @GetMapping("/{id}/delete") // delete/1, delete/2
     @ResponseBody
     public String delete(
